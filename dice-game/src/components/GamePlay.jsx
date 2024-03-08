@@ -1,10 +1,16 @@
 import styled from "styled-components";
 import TotalScore from "./TotalScore";
+import NumberSelector from "./NumberSelector";
+import RollDice from "./RollDice";
 
 function GamePlay() {
   return (
     <MainContainer>
+      <div className="top_section">
         <TotalScore/>
+        <NumberSelector />
+      </div>
+      <RollDice />
     </MainContainer>
   )
 }
