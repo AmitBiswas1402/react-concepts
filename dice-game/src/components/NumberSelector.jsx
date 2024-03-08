@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import { useState } from "react";
 
-const NumberSelector = () => {
+const NumberSelector = (
+  selectedNumber, setSelectedNumber
+) => {
     const arrNumber = [1,2,3,4,5,6];
-    const [selectedNumber, setSelectedNumber] = useState()
+    
 
   return (
     <NumberSelectorContainer>
@@ -30,7 +32,8 @@ const NumberSelectorContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: end;
-
+  cursor: pointer;
+  
   .flex {
     display: flex;
     gap: 24px;
