@@ -1,20 +1,36 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import SearchResults from "./components/SearchResults/SearchResults";
 
-const BASE_URL = "http://localhost:9000/"
+const BASE_URL = "http://localhost:9000/";
 
 function App() {
-  const [data, setData] = useState(null)
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const fetchFoodData = async() => {
-    const response = await fetch(BASE_URL)
+  useEffect(() => {
+    const fetchFoodData = async () => {
+      setLoading(true);
 
-    const json = response.json()
+      try {
+        const response = await fetch(BASE_URL);
 
-    console.log(json)
-  }
-  
-  fetchFoodData()
+        const json = await response.json();
+
+        setData(json);
+        setLoading(false);
+      } catch (error) {
+        setError("Unable to fetch data");
+      }
+    };
+    fetchFoodData();
+  }, []);
+
+  console.log(data);
+
+  if (error) return <div>{error}</div>;
+  if (loading) return <div>LOADING.......</div>;
 
   return (
     <Container>
@@ -32,9 +48,7 @@ function App() {
         <Button>Lunch</Button>
         <Button>Dinner</Button>
       </FilterContainer>
-      <FoodCartContainer>
-        <FoodCart></FoodCart>
-      </FoodCartContainer>
+      <SearchResults data={data} />
     </Container>
   );
 }
@@ -82,11 +96,4 @@ const Button = styled.section`
   color: white;
 `;
 
-const FoodCartContainer = styled.section`
-  height: calc(100vh - 215px);
-  width: full;
-  background-image: url("/bg.png");
-  background-size: cover;
-`;
 
-const FoodCart = styled.div``;
