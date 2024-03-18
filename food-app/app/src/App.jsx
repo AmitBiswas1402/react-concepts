@@ -2,12 +2,14 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import SearchResults from "./components/SearchResults/SearchResults";
 
-const BASE_URL = "http://localhost:9000/";
+export const BASE_URL = "http://localhost:9000";
 
 function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [filterData, setFilterData] = useState(null);
+  const [selectedBtn, setSelectedBtn] = useState("all");
 
   useEffect(() => {
     const fetchFoodData = async () => {
@@ -19,6 +21,7 @@ function App() {
         const json = await response.json();
 
         setData(json);
+        setFilterData(json);
         setLoading(false);
       } catch (error) {
         setError("Unable to fetch data");
@@ -26,6 +29,54 @@ function App() {
     };
     fetchFoodData();
   }, []);
+
+  const searchFood = (e) => {
+    const searchValue = e.target.value;
+
+    console.log(searchValue);
+
+    if (searchValue === "") {
+      setFilterData(null);
+    }
+
+    const filter = data?.filter((food) =>
+      food.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setFilterData(filter);
+  };
+
+  const filterFood = (type) => {
+    if (type === "all") {
+      setFilterData(data);
+      setSelectedBtn("all");
+      return;
+    }
+
+    const filter = data?.filter((food) =>
+      food.type.toLowerCase().includes(type.toLowerCase())
+    );
+    setFilterData(filter);
+    setSelectedBtn(type);
+  };
+
+  // const filterBtn = [
+  //   {
+  //     name: "All",
+  //     type: "all",
+  //   },
+  //   {
+  //     name: "Breakfast",
+  //     type: "breakfast",
+  //   },
+  //   {
+  //     name: "Lunch",
+  //     type: "lunch",
+  //   },
+  //   {
+  //     name: "Dinner",
+  //     type: "dinner",
+  //   },
+  // ]
 
   console.log(data);
 
@@ -39,16 +90,16 @@ function App() {
           <img src="/public/logo.svg" />
         </div>
         <div className="search">
-          <input placeholder="Search Food" type="text" />
+          <input onChange={searchFood} placeholder="Search Food" type="text" />
         </div>
       </TopContainer>
       <FilterContainer>
-        <Button>All</Button>
-        <Button>Breakfast</Button>
-        <Button>Lunch</Button>
-        <Button>Dinner</Button>
+        <Button onClick={() => filterFood("all")}>All</Button>
+        <Button onClick={() => filterFood("breakfast")}>Breakfast</Button>
+        <Button onClick={() => filterFood("lunch")}>Lunch</Button>
+        <Button onClick={() => filterFood("dinner")}>Dinner</Button>
       </FilterContainer>
-      <SearchResults data={data} />
+      <SearchResults data={filterData} />
     </Container>
   );
 }
@@ -79,6 +130,11 @@ const TopContainer = styled.section`
       }
     }
   }
+
+  @media (0 < width < 600px) {
+    flex-direction: column;
+    height: 120px;
+  }
 `;
 
 const FilterContainer = styled.section`
@@ -88,12 +144,11 @@ const FilterContainer = styled.section`
   padding-bottom: 40px;
 `;
 
-const Button = styled.section`
+export const Button = styled.section`
   background: #ff4343;
   border-radius: 5px;
   padding: 6px 12px;
   border: none;
   color: white;
+  cursor: pointer;
 `;
-
-
